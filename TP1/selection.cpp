@@ -1,14 +1,27 @@
 #include <iostream>
+#include <fstream>
+#include <ctime>
 
 void selectionSort(int* array, int size);
+void getArray(std::string file, int* array, int size);
 
-int main()
+int main(int argc, char* argv[])
 {
-    int a[] = {9,8,7,6,5,4,3};
 
-    selectionSort(a, 7);
-    for(int i = 0; i < 7; ++i)
-        std::cout << a[i] << " ";
+    std::string file = argv[1];
+    int size = atoi(argv[2]);
+
+    int* array = new int[size];
+    getArray(file, array,size);
+
+    std::clock_t    start;
+
+    start = std::clock();
+
+    selectionSort(array, size);
+
+    std::cout <<  (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << std::endl;
+
     return 0;
 }
 
@@ -35,4 +48,16 @@ void selectionSort(int* array, int size)
         }
     }
 
+}
+
+void getArray(std::string filename, int* array, int size)
+{
+    std::fstream file(filename);
+    if(file.is_open())
+    {
+        for(int i = 0; i < size; ++i)
+        {
+            file >> array[i];
+        }
+    }
 }
