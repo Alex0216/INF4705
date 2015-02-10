@@ -22,8 +22,6 @@ int main(int argc, char* argv[])
     start = std::clock();
     countingSort(array);
 
-    std::cout << std::endl;
-
     std::cout <<  (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << std::endl;
 
     return 0;
@@ -39,7 +37,6 @@ void countingSort(std::vector<int> &array)
     {
         count[array[i]]++;
     }
-    std::cout << count.size() << std::endl;
     //calcule des indexes
     int total = 0;
     int oldcount = 0;

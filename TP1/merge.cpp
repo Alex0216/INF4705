@@ -22,10 +22,6 @@ int main(int argc, char* argv[])
 
     start = std::clock();
     mergeSort(array);
-    for(auto i : array)
-        std::cout << i << ' ';
-
-    std::cout << std::endl;
 
     std::cout <<  (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << std::endl;
 

@@ -1,7 +1,35 @@
 #!/bin/bash
 set +C
-for file in ./tp1-H10-donnees/testset_1000_[0-9].txt;
+echo "Selection Sort"
+#Selection sort
+for i in 1000 5000 10000 50000 100000 500000
 do
-read -ra values <<< $(./Build/Selection $file 1000)
-echo $file";"$values
+for file in ./tp1-H10-donnees/testset_${i}_[0-9].txt;
+do
+    read -ra values <<< $(./Build/Selection $file $i)
+    echo $file";"$values
+done
+done
+
+
+#Couting sort
+echo "Counting Sort"
+for i in 1000 5000 10000 50000 100000 500000
+do
+for file in ./tp1-H10-donnees/testset_${i}_[0-9].txt;
+do
+    read -ra values <<< $(./Build/couting $file $i)
+    echo $file";"$values
+done
+done
+
+#Merge sort
+echo "Merge sort"
+for i in 1000 5000 10000 50000 100000 500000
+do
+for file in ./tp1-H10-donnees/testset_${i}_[0-9].txt;
+do
+    read -ra values <<< $(./Build/Merge $file $i)
+    echo $file";"$values
+done
 done
