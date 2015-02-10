@@ -10,3 +10,5 @@ add_executable(Merge ${MERGE_FILES})
 add_executable(Selection selection.cpp)
 
 add_executable(mergeSeuil mergeSeuil.cpp)
+
+add_executable(couting counting.cpp)
