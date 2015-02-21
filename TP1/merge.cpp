@@ -3,6 +3,7 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
+#include <unistd.h>
 
 void mergeSort(std::vector<int> &array);
 void mergeSortRecursif(std::vector<int>& array, int low, int high);

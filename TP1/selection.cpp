@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <vector>
+#include <algorithm>
 
-void selectionSort(int* array, int size);
-void getArray(std::string file, int* array, int size);
+void selectionSort(std::vector<int> &array);
+void getArray(std::string filename,std::vector<int> &array, int size);
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +29,7 @@ int main(int argc, char* argv[])
 
 void selectionSort(std::vector<int> &array)
 {
-    Iterator min;
+    auto min = array.begin();
 	auto begin = array.begin();
 	auto end = array.end();
     while (begin != end)
