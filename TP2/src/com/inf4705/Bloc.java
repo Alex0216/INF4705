@@ -2,6 +2,7 @@ package com.inf4705;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,9 +35,25 @@ public class Bloc {
         return blocs;
     }
 
+    public Bloc getBestOrientation(){
+        ArrayList<Bloc> blocs = getAllOrientation();
+        blocs.sort(new Vorace.SurfaceComparator());
+        return blocs.get(0);
+    }
+
     public int Surface()
     {
         return Largeur*Profondeur;
+    }
+
+    public float RatioMagique()
+    {
+        return ((float)Profondeur/(float)Largeur) * Surface();
+    }
+
+    public boolean canStack(Bloc up)
+    {
+        return Largeur > up.Largeur && Profondeur > up.Profondeur;
     }
 
     public String toString()
