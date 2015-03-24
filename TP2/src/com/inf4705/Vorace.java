@@ -23,7 +23,7 @@ public class Vorace {
         for(String file : new File("./").list()){
             ArrayList<Bloc> blocs = Bloc.ReadTestFile(file);
             long startTime = System.nanoTime();
-            List<Bloc> ensemble = blocs.stream().map(b -> b.getBestOrientation()).sorted(new SurfaceComparator()).collect(Collectors.toList());
+            List<Bloc> ensemble = blocs.stream().map(b -> b.getBestOrientation()).sorted(new SurfaceRatioComparator()).collect(Collectors.toList());
             ArrayList<Bloc> solution = new ArrayList<>();
             solution.add(ensemble.remove(0));
             for (Bloc b : ensemble) {
@@ -45,7 +45,7 @@ public class Vorace {
     /**
      * Comparator pour trier en ordre decroissant de surface
      */
-    public static class SurfaceComparator implements Comparator<Bloc> {
+    public static class SurfaceRatioComparator implements Comparator<Bloc> {
         @Override
         public int compare(Bloc a, Bloc b) {
 
