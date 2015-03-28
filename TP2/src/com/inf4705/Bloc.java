@@ -35,6 +35,10 @@ public class Bloc {
         return blocs;
     }
 
+    public int getHauteur(){
+        return Hauteur;
+    }
+
     public Bloc getBestOrientation(){
         ArrayList<Bloc> blocs = getAllOrientation();
         blocs.sort(new Vorace.SurfaceRatioComparator());

@@ -31,7 +31,6 @@ public class Dynamique {
 
             for(int i = 0; i < ensemble.size(); ++i){
                 hauteurMax = Math.max(hauteurMax, calculeHauteur(ensemble, i));
-
             }
 
             long duration = System.nanoTime() - startTime;
