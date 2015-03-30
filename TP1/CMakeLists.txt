@@ -5,9 +5,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 
 set(MERGE_FILES merge.cpp)
-add_executable(Merge ${MERGE_FILES})
+add_executable(merge ${MERGE_FILES})
 
-add_executable(Selection selection.cpp)
+add_executable(selection selection.cpp)
 
 add_executable(mergeSeuil mergeSeuil.cpp)
 

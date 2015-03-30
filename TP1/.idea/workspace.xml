@@ -19,16 +19,7 @@
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Build/Merge" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Build/Selection" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Build/couting" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/TP1.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/seuil.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mergeSeuil.cpp" afterPath="$PROJECT_DIR$/mergeSeuil.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/selection.sh" afterPath="$PROJECT_DIR$/selection.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="TP1.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -282,7 +273,13 @@
       <option name="project" value="LOCAL" />
       <updated>1423604720491</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="mergeseuil complete">
+      <created>1424705400901</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1424705400901</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -326,7 +323,8 @@
     </option>
     <MESSAGE value="added mergesort" />
     <MESSAGE value="updated shell script" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated shell script" />
+    <MESSAGE value="mergeseuil complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="mergeseuil complete" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
