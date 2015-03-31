@@ -23,7 +23,7 @@ public class Vorace {
         for(String file : new File("./").list()){
             ArrayList<Bloc> blocs = Bloc.ReadTestFile(file);
             long startTime = System.nanoTime();
-            List<Bloc> ensemble = blocs.stream().map(b -> b.getBestOrientation()).sorted(new SurfaceRatioComparator()).collect(Collectors.toList());
+            List<Bloc> ensemble = blocs.stream().flatMap(b -> b.getAllOrientation().stream()).sorted(new SurfaceRatioComparator()).collect(Collectors.toList());
             ArrayList<Bloc> solution = new ArrayList<>();
             solution.add(ensemble.remove(0));
             for (Bloc b : ensemble) {
