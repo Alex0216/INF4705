@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Bloc.h"
+#include "algo.h"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ vector<Bloc> getDataSet(string filename);
 int main(int argc, char* argv[]) {
 
     auto blocs = getDataSet(argv[2]);
-    cout << "Hello, World!" << endl;
+    INF4705::vorace(blocs);
     return 0;
 }
 
