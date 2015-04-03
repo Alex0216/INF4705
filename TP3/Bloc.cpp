@@ -37,5 +37,6 @@ std::ostream& operator<<(std::ostream& os, const Bloc& bloc)
 
 bool Bloc::canStack(const Bloc &up) const
 {
-    return largeur_ > up.largeur_ && profondeur_ > up.profondeur_;
+    bool reponse = (largeur_ > up.largeur_) && (profondeur_ > up.profondeur_);
+    return reponse;
 }

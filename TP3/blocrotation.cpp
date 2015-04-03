@@ -33,3 +33,21 @@ Bloc BlocRotations::getHighestSurface() const
     else
         return C;
 }
+
+Bloc BlocRotations::CritereAlex() const
+{
+    int diffA = A.getProfondeur() - A.getLargeur();
+    int diffB = B.getProfondeur() - B.getLargeur();
+    int diffC = C.getProfondeur() - C.getLargeur();
+
+    if(diffA < diffB)
+    {
+        if(diffC < diffA)
+            return C;
+        else
+            return A;
+    }
+    if(diffB < diffC)
+        return B;
+    return C;
+}

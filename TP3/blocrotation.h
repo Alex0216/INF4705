@@ -14,6 +14,7 @@ public:
     BlocRotations(int h, int l, int p);
 
     Bloc getHighestSurface() const;
+    Bloc CritereAlex() const;
 
     Bloc A;
     Bloc B;
