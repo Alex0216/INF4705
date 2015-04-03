@@ -10,15 +10,24 @@
 
 class Bloc {
 public:
+    Bloc() = default;
     Bloc(int h, int l, int p);
     Bloc(const Bloc&) = default;
     int getHauteur() const;
     int getLargeur() const;
     int getProfondeur() const;
     int getSurface() const;
-    void rotate();
-    Bloc getRotation() const;
-    inline bool operator<(const Bloc& r){return getSurface() < r.getSurface();}
+
+    bool canStack(const Bloc& up) const;
+
+
+    /**
+     * Un bloc est plus petit qu'un autre seulement si sa largeur et sa profondeur sont strictement
+     * plus petite que l'autre bloc
+     */
+    inline bool operator<(const Bloc& r){return largeur_ < r.largeur_ && profondeur_ < r.profondeur_;}
+    inline bool operator>(const Bloc& r){return largeur_ > r.largeur_ && profondeur_ > r.profondeur_;}
+
     friend std::ostream& operator<<(std::ostream& os, const Bloc& bloc);
 
     static void extendDataSet(std::vector<Bloc> blocs);

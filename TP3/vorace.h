@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "Bloc.h"
+#include "bloc.h"
 
-namespace INF4705 {
+namespace vorace {
 
-    void vorace(std::vector<Bloc>& blocs);
+    std::vector<std::vector<Bloc>> voraceFirstFit(std::vector<Bloc>& blocs);
 }
 
 

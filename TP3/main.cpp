@@ -2,8 +2,8 @@
 #include <fstream>
 #include <vector>
 
-#include "Bloc.h"
-#include "algo.h"
+#include "bloc.h"
+#include "vorace.h"
 
 using namespace std;
 
@@ -12,7 +12,19 @@ vector<Bloc> getDataSet(string filename);
 int main(int argc, char* argv[]) {
 
     auto blocs = getDataSet(argv[2]);
-    INF4705::vorace(blocs);
+    auto tours = vorace::voraceFirstFit(blocs);
+
+    cout << "NB tours: " << tours.size();
+    if(argc >= 4 && argv[3])
+    {
+        for(auto& tour : tours)
+        {
+            for(auto& b : tour)
+                cout << b << endl;
+            cout << "========" << endl;
+        }
+    }
+
     return 0;
 }
 
