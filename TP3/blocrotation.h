@@ -16,6 +16,8 @@ public:
     Bloc getHighestSurface() const;
     Bloc CritereAlex() const;
 
+	Bloc operator[](int index);
+
     Bloc A;
     Bloc B;
     Bloc C;
