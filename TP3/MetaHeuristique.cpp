@@ -1,24 +1,32 @@
 #include "MetaHeuristique.h"
 
-#include "bloc.h"
 #include <algorithm>
 #include <random>
 #include <iostream>
 #include <iterator>
+#include <fstream>
+#include <numeric>
 #include <math.h>
-#include "blocrotation.h"
 
+
+#include "bloc.h"
+#include "blocrotation.h"
+#include "vorace.h"
 
 using namespace std;
 
 void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs)
 {
 	int Kmax = 500;
-	double temp = 100;
+	double temp = 3;
 	int palier = 50;
 	double coeff = 0.9;
+	bool converge;
 
+	ofstream data;
+	data.open("../moyenne50k.csv");
 
+	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
 	std::sort(begin(tours), end(tours), [](auto a, auto b)->bool {return a.size() > b.size(); });
 
@@ -34,12 +42,15 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 				nouveau = voisinPlusPetiteTour(solutionCourante);
 			else
 				nouveau = voisinTourHasard(solutionCourante);
-			
-			int delta = (int)solutionCourante.size() - (int)nouveau.size();
+
+			//double delta = calculeMoyenneHauteur(solutionCourante) - calculeMoyenneHauteur(nouveau);
+			double nouvelMoyenne = calculeMoyenneHauteur(nouveau);
+			double moyenne = calculeMoyenneHauteur(solutionCourante);
+			double delta = (int)solutionCourante.size() - (int)nouveau.size();
+			convergence += nouvelMoyenne - moyenne;
 			if (critereMetropolis(delta, temp))
 			{
 				solutionCourante = nouveau;
-				
 				if (meilleur.size() > solutionCourante.size())
 				{
 					cout << "Nouveau meilleur: " << nouveau.size() << endl;
@@ -48,8 +59,56 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 			}
 		}
 		temp *= coeff;
+
+		//verifie si la solution converge
+		if (convergence / ((i + 1)*palier) < 0.1)
+		{
+			cout << "Converge apres " << (i+1)*palier << " iterations" << endl;
+			break;
+		}
 	}
 	tours = meilleur;
+}
+
+std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleRecursif(std::vector<Bloc>& bloc, int depth)
+{
+	//Generer solution initial
+	auto init = vorace::insertFirstFit(bloc);
+
+	//Faire un recuit simule
+	recuitSimule(init, (int)bloc.size());
+
+	if (depth < 0)
+		return init;
+
+	//Prendre la tour avec le plus grand nombre de bloc et l'enlever de la solution
+	auto maxTourIt = std::max_element(begin(init), end(init), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
+	auto maxTour = *maxTourIt;
+	init.erase(maxTourIt);
+
+	//enlever les blocs de la grande tour de l'ensemble des blocs de depart
+	for (auto& b : maxTour)
+	{
+		for (int i = bloc.size() - 1; i >= 0; --i)
+		{
+			if (b == bloc[i])
+			{
+				bloc.erase(begin(bloc) + i);
+				break;
+			}
+		}
+	}
+
+	vector<vector<Bloc>> solution;
+	solution.push_back(maxTour);
+	auto solutionRecursif = recuitSimuleRecursif(bloc, --depth);
+	if(solutionRecursif.size() < init.size())
+		for (auto& tour : solutionRecursif)
+			solution.push_back(tour);
+	else
+		for (auto& tour : init)
+			solution.push_back(tour);
+	return solution;
 }
 
 std::vector<std::vector<Bloc>> MetaHeuristique::voisin(std::vector<std::vector<Bloc>>& tours)
@@ -231,7 +290,7 @@ void MetaHeuristique::insertBloc(std::vector<Bloc>& blocs, std::vector<std::vect
 	}
 }
 
-bool MetaHeuristique::critereMetropolis(int delta, double temperature)
+bool MetaHeuristique::critereMetropolis(double delta, double temperature)
 {
 	if (delta >= 0)
 		return true;
@@ -272,6 +331,16 @@ void MetaHeuristique::balanceTower(std::vector<std::vector<Bloc>>& tours)
 			}
 		}
 	}
+}
+
+double MetaHeuristique::calculeMoyenneHauteur(std::vector<std::vector<Bloc>> tours)
+{
+	int sum = std::accumulate(begin(tours), end(tours), 0, [](int total, const vector<Bloc>& tour)
+	{
+		return total + std::accumulate(begin(tour), end(tour), 0, [](int hauteur, const Bloc& bloc){return hauteur + bloc.getHauteur(); });
+	});
+
+	return sum / (double)tours.size();
 }
 
 

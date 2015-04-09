@@ -13,7 +13,7 @@
 using namespace std;
 
 vector<Bloc> getDataSet(string filename);
-bool test(std::vector<std::vector<Bloc>> tours, int n);
+bool test(std::vector<std::vector<Bloc>> tours, std::vector<Bloc> setDepart);
 void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<Bloc>& blocs, int size, bool print);
 
 int main(int argc, char* argv[]) {
@@ -28,14 +28,16 @@ int main(int argc, char* argv[]) {
 
 void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<Bloc>& blocs, int size, bool print)
 {
+	std::vector<Bloc> blocsDepart(blocs);
+
 	auto start_time = chrono::system_clock::now();
-	auto tours = vorace(blocs);
-	MetaHeuristique::recuitSimule(tours, size);
+	vector<vector<Bloc>> solution;
+	auto tours = MetaHeuristique::recuitSimuleRecursif(blocs, 10);
 	auto end_time = chrono::system_clock::now();
 
 	cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
 
-	cout << "Test: " << boolalpha << test(tours, size) << endl;
+	cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
 
 	cout << "NB tours: " << tours.size() << endl;
 
@@ -77,15 +79,21 @@ vector<Bloc> getDataSet(string filename)
 	return vector<Bloc>();
 }
 
-bool test(std::vector<std::vector<Bloc>> tours, int n)
+bool test(std::vector<std::vector<Bloc>> tours, std::vector<Bloc> setDepart)
 {
-    size_t nbBloc = 0;
+	vector<Bloc> blocsFin;
+	blocsFin.reserve(setDepart.size());
     for(auto& tour : tours)
     {
-        nbBloc += tour.size();
-        for(int i = 0; i < tour.size()-1; ++i)
-            if(!tour[i].canStack(tour[i+1]))
-                return false;
+		for (int i = 0; i < tour.size() - 1; ++i)
+		{
+			blocsFin.push_back(tour[i]);
+			if (!tour[i].canStack(tour[i + 1]))
+				return false;
+		}
+
+		blocsFin.push_back(tour[tour.size() - 1]);
     }
-    return nbBloc == n;
+
+    return std::is_permutation(begin(blocsFin), end(blocsFin), begin(setDepart));
 }

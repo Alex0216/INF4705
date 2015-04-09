@@ -28,6 +28,8 @@ public:
     inline bool operator<(const Bloc& r){return largeur_ < r.largeur_ && profondeur_ < r.profondeur_;}
     inline bool operator>(const Bloc& r){return largeur_ > r.largeur_ && profondeur_ > r.profondeur_;}
 
+	bool operator==(const Bloc& r);
+
     friend std::ostream& operator<<(std::ostream& os, const Bloc& bloc);
 
     static void extendDataSet(std::vector<Bloc> blocs);
