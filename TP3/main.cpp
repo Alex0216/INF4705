@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
+#include <algorithm>
 #include "Bloc.h"
 #include "vorace.h"
 #include "dynamique.h"
@@ -95,5 +95,5 @@ bool test(std::vector<std::vector<Bloc>> tours, std::vector<Bloc> setDepart)
 		blocsFin.push_back(tour[tour.size() - 1]);
     }
 
-    return std::is_permutation(begin(blocsFin), end(blocsFin), begin(setDepart));
+    return is_permutation(begin(blocsFin), end(blocsFin), begin(setDepart));
 }
