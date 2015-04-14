@@ -6,7 +6,7 @@
 #define TP3_BLOCROTATIONS_H
 
 
-#include "bloc.h"
+#include "Bloc.h"
 
 class BlocRotations {
 public:

@@ -9,7 +9,7 @@
 #include <math.h>
 
 
-#include "bloc.h"
+#include "Bloc.h"
 #include "blocrotation.h"
 #include "vorace.h"
 

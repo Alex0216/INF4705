@@ -2,7 +2,7 @@
 // Created by Alexandre on 3/31/2015.
 //
 
-#include "bloc.h"
+#include "Bloc.h"
 
 #include <algorithm>
 #include <array>

@@ -5,7 +5,7 @@
 #ifndef TP3_GRAPH_H
 #define TP3_GRAPH_H
 
-#include "bloc.h"
+#include "Bloc.h"
 
 namespace Graph
 {

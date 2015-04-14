@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bloc.h"
+#include "Bloc.h"
 #include <vector>
 
 namespace MetaHeuristique

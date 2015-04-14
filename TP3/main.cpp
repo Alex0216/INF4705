@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 
-#include "bloc.h"
+#include "Bloc.h"
 #include "vorace.h"
 #include "dynamique.h"
 #include "graph.h"

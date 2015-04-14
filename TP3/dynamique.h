@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "bloc.h"
+#include "Bloc.h"
 
 namespace dynamique {
 
