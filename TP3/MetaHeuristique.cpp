@@ -28,7 +28,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 
 	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
-	std::sort(begin(tours), end(tours), [](auto a, auto b)->bool {return a.size() > b.size(); });
+	std::sort(begin(tours), end(tours), [](std::vector<Bloc> a, std::vector<Bloc> b)->bool {return a.size() > b.size(); });
 
 	vector<vector<Bloc>> meilleur(tours);
 	vector<vector<Bloc>> solutionCourante(tours);
@@ -82,7 +82,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleRecursif(std::vector
 		return init;
 
 	//Prendre la tour avec le plus grand nombre de bloc et l'enlever de la solution
-	auto maxTourIt = std::max_element(begin(init), end(init), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
+	auto maxTourIt = std::max_element(begin(init), end(init), [](std::vector<Bloc>& a, std::vector<Bloc>&b) -> bool {return a.size() < b.size(); });
 	auto maxTour = *maxTourIt;
 	init.erase(maxTourIt);
 
@@ -161,7 +161,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::voisinPlusPetiteTour(std::vector
 	//balanceTower(toursVoisin);
 
 	//Prendre la plus petite tour
-	auto minTourIt = std::min_element(begin(toursVoisin), end(toursVoisin), [](auto a, auto b) -> bool {return a.size() < b.size(); });
+	auto minTourIt = std::min_element(begin(toursVoisin), end(toursVoisin), [](std::vector<Bloc> a, std::vector<Bloc> b) -> bool {return a.size() < b.size(); });
 	vector<Bloc> minTour = *minTourIt;
 
 	toursVoisin.erase(minTourIt);

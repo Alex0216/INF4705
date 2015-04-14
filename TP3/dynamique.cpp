@@ -31,7 +31,7 @@ std::vector<std::vector<int>> dynamique::dynamique(std::vector<Bloc> &blocs)
             maxResult = res;
     }
 
-	return null;
+	return tableau;
 }
 
 vector<Bloc> getTour(vector<int> top, vector<Bloc>& blocs)
@@ -40,6 +40,7 @@ vector<Bloc> getTour(vector<int> top, vector<Bloc>& blocs)
     int index = top[1];
     tour.push_back(blocs[index]);
 
+	return tour;
 }
 
 vector<int> calculerHauteur(vector<Bloc>& ensemble, int currentIndex, std::vector<std::vector<int>>& tableau )

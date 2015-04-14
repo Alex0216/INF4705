@@ -211,7 +211,7 @@ std::vector<std::vector<Bloc>> vorace::insertBestFit(std::vector<Bloc>& blocs)
 			tours[tours.size() - 1].push_back(b);
 		}
 
-		std::sort(begin(tours), end(tours), [](auto a, auto b)-> bool {return a.size() > b.size(); });
+		std::sort(begin(tours), end(tours), [](std::vector<Bloc> a, std::vector<Bloc> b)-> bool {return a.size() > b.size(); });
 	}
 	return tours;
 }
