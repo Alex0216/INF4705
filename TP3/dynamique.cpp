@@ -11,53 +11,78 @@
 
 using namespace std;
 
-vector<int> calculerHauteur(vector<Bloc>& ensemble, int currentIndex, std::vector<std::vector<int>>& tableau );
-vector<Bloc> getTour(vector<int> top, vector<Bloc>& blocs);
+int calculerHauteur(vector<dynamique::BlocDyn>& ensemble, int currentIndex);
+vector<Bloc> getTour(int top, std::vector<dynamique::BlocDyn>& blocs);
 
-std::vector<std::vector<int>> dynamique::dynamique(std::vector<Bloc> &blocs)
+vector<Bloc> dynamique::plusGrandTour(std::vector<Bloc> &blocs)
 {
-    std::vector<std::vector<int>> tableau(blocs.size(), std::vector<int>(2, 0));
-    std::vector<Bloc> ensemble;
+    std::vector<dynamique::BlocDyn> ensemble;
     std::vector<std::vector<Bloc>> solution;
-    transform(begin(blocs), end(blocs), back_inserter(ensemble), [](Bloc b) -> Bloc {BlocRotations rot(b); return rot.CritereAlex();});
-    std::sort(begin(ensemble), end(ensemble), [](Bloc a, Bloc b) -> bool {return a.getSurface() > b.getSurface();});
+    
+	//Etendre l'ensemble de bloc initial pour avoir les 3 rotations
+	int id = 0;
+	for (auto& bloc : blocs)
+	{
+		BlocRotations rot(bloc);
+		ensemble.emplace_back(rot.A, id);
+		ensemble.emplace_back(rot.B, id);
+		ensemble.emplace_back(rot.C, id);
 
-    vector<int> maxResult = {0,0};
+		id++;
+	}
+
+	std::sort(begin(ensemble), end(ensemble), [](dynamique::BlocDyn& a, dynamique::BlocDyn& b) -> bool {return a.bloc.getSurface() > b.bloc.getSurface(); });
+
+	int maxHauteur = 0;
+	int maxIndex =0;
 
     for(int i = 0; i < ensemble.size(); ++i)
     {
-        auto res = calculerHauteur(ensemble, i, tableau);
-        if(res[0] > maxResult[0])
-            maxResult = res;
+        auto res = calculerHauteur(ensemble, i);
+		if (res > maxHauteur)
+		{
+			maxHauteur = res;
+			maxIndex = i;
+		}
+
     }
 
-	return null;
+	return getTour(maxIndex, ensemble);;
 }
 
-vector<Bloc> getTour(vector<int> top, vector<Bloc>& blocs)
+vector<Bloc> getTour(int top, std::vector<dynamique::BlocDyn>& blocs)
 {
     vector<Bloc> tour;
-    int index = top[1];
-    tour.push_back(blocs[index]);
+	int index = top;
+	bool done = false;
+	do
+	{
+		tour.push_back(blocs[index].bloc);
+		if (index == blocs[index].previous)
+			done = true;
+		index = blocs[index].previous;
+	} while (! done);
 
+	std::reverse(begin(tour), end(tour));
+	return tour;
 }
 
-vector<int> calculerHauteur(vector<Bloc>& ensemble, int currentIndex, std::vector<std::vector<int>>& tableau )
+int calculerHauteur(vector<dynamique::BlocDyn>& ensemble, int currentIndex)
 {
-    if(tableau[currentIndex][0] != 0)
-        return tableau[currentIndex];
+    if(ensemble[currentIndex].previous >= 0)
+        return ensemble[currentIndex].hauteur;
 
     int maxHauteur = 0;
     int maxIndex = currentIndex;
-    Bloc bloc = ensemble[currentIndex];
+	dynamique::BlocDyn bloc = ensemble[currentIndex];
     for(int i = 0; i < currentIndex; ++i)
     {
         if(ensemble[i].canStack(bloc))
         {
-            vector<int> result = calculerHauteur(ensemble, i, tableau);
-            if(result[0] > maxHauteur)
+            int result = calculerHauteur(ensemble, i);
+            if(result> maxHauteur)
             {
-                maxHauteur = result[0];
+                maxHauteur = result;
                 maxIndex = i;
             }
         }
@@ -65,14 +90,14 @@ vector<int> calculerHauteur(vector<Bloc>& ensemble, int currentIndex, std::vecto
 
     if(maxHauteur > 0)
     {
-        tableau[currentIndex][0] = maxHauteur + 1;
-        tableau[currentIndex][1] = maxIndex;
+        ensemble[currentIndex].hauteur = maxHauteur + 1;
+		ensemble[currentIndex].previous = maxIndex;
     }
     else
     {
-        tableau[currentIndex][0] = 1;
-        tableau[currentIndex][1] = currentIndex;
+        ensemble[currentIndex].hauteur = 1;
+        ensemble[currentIndex].previous = currentIndex;
     }
     vector<int> resultat = {maxHauteur, currentIndex};
-    return resultat;
+    return ensemble[currentIndex].hauteur;
 }

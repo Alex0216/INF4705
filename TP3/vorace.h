@@ -13,7 +13,6 @@ namespace vorace {
 
     std::vector<std::vector<Bloc>> firstFit(std::vector<Bloc>& blocs);
     std::vector<std::vector<Bloc>> insertFirstFit(std::vector<Bloc>& blocs);
-	std::vector<std::vector<Bloc>> reverserInsertFirstFit(std::vector<Bloc>& blocs);
 	std::vector<std::vector<Bloc>> insertBestFit(std::vector<Bloc>& blocs);
 }
 

@@ -11,7 +11,24 @@
 
 namespace dynamique {
 
-    std::vector<std::vector<int>> dynamique(std::vector<Bloc>& blocs);
+	struct BlocDyn
+	{
+		Bloc bloc;
+		int id;
+		int previous;
+		int hauteur;
+
+		BlocDyn(Bloc b, int i) :bloc(b), id(i), previous(-1), hauteur(1)
+		{
+		}
+
+		bool canStack(BlocDyn up)
+		{
+			return bloc.canStack(up.bloc) && id != up.id;
+		}
+	};
+
+	std::vector<Bloc> plusGrandTour(std::vector<Bloc>& blocs);
 }
 
 #endif //TP3_DYNAMIQUE_H

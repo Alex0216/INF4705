@@ -7,11 +7,13 @@
 #include <fstream>
 #include <numeric>
 #include <math.h>
+#include <chrono>
 
 
 #include "bloc.h"
 #include "blocrotation.h"
 #include "vorace.h"
+#include "dynamique.h"
 
 using namespace std;
 
@@ -21,10 +23,9 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 	double temp = 3;
 	int palier = 50;
 	double coeff = 0.9;
-	bool converge;
 
-	ofstream data;
-	data.open("../moyenne50k.csv");
+	//ofstream data;
+	//data.open("../moyenne50k.csv");
 
 	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
@@ -38,7 +39,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 		for (int j = 1; j < palier; ++j)
 		{
 			vector<vector<Bloc>> nouveau;
-			if (j < palier / 2)
+			if (j%2 == 0)
 				nouveau = voisinPlusPetiteTour(solutionCourante);
 			else
 				nouveau = voisinTourHasard(solutionCourante);
@@ -61,7 +62,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 		temp *= coeff;
 
 		//verifie si la solution converge
-		if (convergence / ((i + 1)*palier) < 0.1)
+		if (convergence / ((i + 1)*palier) < 0.15)
 		{
 			cout << "Converge apres " << (i+1)*palier << " iterations" << endl;
 			break;
@@ -108,6 +109,83 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleRecursif(std::vector
 	else
 		for (auto& tour : init)
 			solution.push_back(tour);
+	return solution;
+}
+
+std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector<Bloc>& bloc)
+{
+	vector<Bloc> ensemble;
+	std::transform(begin(bloc), end(bloc), back_inserter(ensemble), [](Bloc a) -> Bloc {return BlocRotations(a).CritereAlex(); });
+	std::sort(begin(ensemble), end(ensemble), [](Bloc& a, Bloc& b) -> bool {return a.getSurface() > b.getSurface(); });
+	vector<vector<Bloc>> init = vorace::insertFirstFit(bloc);
+	vector<vector<Bloc>> meilleur;
+	vector<vector<Bloc>> solution;
+
+	auto start_time = chrono::system_clock::now();
+
+	while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000)
+	{
+
+		vector<Bloc> maxTour;
+		if (ensemble.size() < 10000)
+		{
+			maxTour = dynamique::plusGrandTour(ensemble);
+			//enlever les blocs de la grande tour de l'ensemble des blocs de depart
+			for (auto& b : maxTour)
+			{
+				for (int i = ensemble.size() - 1; i >= 0; --i)
+				{
+					if (b == ensemble[i])
+					{
+						ensemble.erase(begin(ensemble) + i);
+						break;
+					}
+				}
+			}
+			solution.push_back(maxTour);
+			meilleur.clear();
+		}
+
+		else
+		{
+			//Générer une solution
+			auto toursVorace = vorace::insertFirstFit(ensemble);
+			//Faire un recuit simule
+			recuitSimule(toursVorace, (int)ensemble.size());
+
+			if (toursVorace.size() < meilleur.size() || meilleur.empty())
+				meilleur = toursVorace;
+
+			//Prendre la tour avec le plus grand nombre de bloc et l'ajouter à la solution
+			auto maxTourIt = std::max_element(begin(meilleur), end(meilleur), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
+			maxTour = *maxTourIt;
+			meilleur.erase(maxTourIt);
+			solution.push_back(maxTour);
+
+			//enlever les blocs de la grande tour de l'ensemble des blocs de depart
+			for (auto& b : maxTour)
+			{
+				for (int i = ensemble.size() - 1; i >= 0; --i)
+				{
+					if (b == ensemble[i])
+					{
+						ensemble.erase(begin(ensemble) + i);
+						break;
+					}
+				}
+			}
+		}
+
+	}
+	if (meilleur.empty())
+	{
+		meilleur = vorace::insertFirstFit(bloc);
+		recuitSimule(meilleur, (int)bloc.size());
+	}
+
+	for (auto& tour : meilleur)
+		solution.push_back(tour);
+
 	return solution;
 }
 
@@ -161,7 +239,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::voisinPlusPetiteTour(std::vector
 	//balanceTower(toursVoisin);
 
 	//Prendre la plus petite tour
-	auto minTourIt = std::min_element(begin(toursVoisin), end(toursVoisin), [](auto a, auto b) -> bool {return a.size() < b.size(); });
+	auto minTourIt = std::min_element(begin(toursVoisin), end(toursVoisin), [](vector<Bloc> a, vector<Bloc> b) -> bool {return a.size() < b.size(); });
 	vector<Bloc> minTour = *minTourIt;
 
 	toursVoisin.erase(minTourIt);
@@ -243,6 +321,10 @@ std::vector<std::vector<Bloc>> MetaHeuristique::voisinRotation(std::vector<std::
 
 void MetaHeuristique::insertBloc(std::vector<Bloc>& blocs, std::vector<std::vector<Bloc>>& tours)
 {
+	// obtain a time-based seed:
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	shuffle(blocs.begin(), blocs.end(), std::default_random_engine(seed));
+
 	for (auto& b : blocs)
 	{
 		bool stacked = false;

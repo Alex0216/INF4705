@@ -21,12 +21,9 @@ bool setCompare(vector<Bloc> a, vector<Bloc> b);
  */
 vector<vector<Bloc>> vorace::firstFit(std::vector<Bloc>& blocs)
 {
-    vector<Bloc> ensemble;
-    transform(begin(blocs), end(blocs), back_inserter(ensemble), [](Bloc b) -> Bloc {BlocRotations rot(b); return rot.getHighestSurface();});
-    std::sort(begin(ensemble), end(ensemble), reverseSurfaceComparison);
     vector<vector<Bloc>> tours;
     tours.emplace_back();
-    for(auto& b : ensemble)
+    for(auto& b : blocs)
     {
         bool stacked = false;
 
@@ -58,12 +55,9 @@ vector<vector<Bloc>> vorace::firstFit(std::vector<Bloc>& blocs)
 
 vector<vector<Bloc>> vorace::insertFirstFit(std::vector<Bloc>& blocs)
 {
-    vector<Bloc> ensemble;
-    transform(begin(blocs), end(blocs), back_inserter(ensemble), [](Bloc b) -> Bloc {BlocRotations rot(b); return rot.CritereAlex();});
-    std::sort(begin(ensemble), end(ensemble), reverseSurfaceComparison);
     vector<vector<Bloc>> tours;
     tours.emplace_back();
-    for(auto& b : ensemble)
+    for(auto& b : blocs)
     {
         bool stacked = false;
 
@@ -107,71 +101,12 @@ vector<vector<Bloc>> vorace::insertFirstFit(std::vector<Bloc>& blocs)
 
 }
 
-std::vector<std::vector<Bloc>> vorace::reverserInsertFirstFit(std::vector<Bloc>& blocs)
-{
-	vector<Bloc> ensemble;
-	transform(begin(blocs), end(blocs), back_inserter(ensemble), [](Bloc b) -> Bloc {BlocRotations rot(b); return rot.CritereAlex(); });
-	std::sort(begin(ensemble), end(ensemble), [](Bloc a, Bloc b) -> bool {return a.getSurface() < b.getSurface(); });
-	vector<vector<Bloc>> tours;
-	tours.emplace_back();
-
-	for (auto& b : ensemble)
-	{
-		bool stacked = false;
-
-		for (auto& tour : tours)
-		{
-			if (tour.empty())
-			{
-				tour.push_back(b);
-				stacked = true;
-				break;
-			}
-			else
-			{
-				int i = 0;
-				while (i < tour.size() && b.canStack(tour[i]))
-					++i;
-
-				if (i == tour.size() && b.canStack(tour[i - 1]))
-				{
-					tour.push_back(b);
-					stacked = true;
-					break;
-				}
-
-				if (tour[i].canStack(b))
-				{
-					tour.insert(begin(tour) + i, b);
-					stacked = true;
-					break;
-				}
-			}
-		}
-
-		if (stacked == false)
-		{
-			tours.emplace_back();
-			tours[tours.size() - 1].push_back(b);
-		}
-	}
-
-	for (auto& tour : tours)
-	{
-		std::reverse(begin(tour), end(tour));
-	}
-
-	return tours;
-}
 
 std::vector<std::vector<Bloc>> vorace::insertBestFit(std::vector<Bloc>& blocs)
 {
-	vector<Bloc> ensemble;
-	transform(begin(blocs), end(blocs), back_inserter(ensemble), [](Bloc b) -> Bloc {BlocRotations rot(b); return rot.CritereAlex(); });
-	std::sort(begin(ensemble), end(ensemble), reverseSurfaceComparison);
 	vector<vector<Bloc>> tours;
 	tours.emplace_back();
-	for (auto& b : ensemble)
+	for (auto& b : blocs)
 	{
 		bool stacked = false;
 

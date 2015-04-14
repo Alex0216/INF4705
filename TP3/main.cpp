@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 
 #include "bloc.h"
 #include "vorace.h"
@@ -32,14 +34,15 @@ void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<
 
 	auto start_time = chrono::system_clock::now();
 	vector<vector<Bloc>> solution;
-	auto tours = MetaHeuristique::recuitSimuleRecursif(blocs, 10);
+	auto tours = MetaHeuristique::recuitSimuleIteratif(blocs);
+	//auto tours = dynamique::plusGrandTour(blocs);
 	auto end_time = chrono::system_clock::now();
 
 	cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
-
-	cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
-
 	cout << "NB tours: " << tours.size() << endl;
+
+	//cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
+
 
 	if (print)
 	{

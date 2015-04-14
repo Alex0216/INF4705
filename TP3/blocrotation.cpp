@@ -54,7 +54,7 @@ Bloc BlocRotations::CritereAlex() const
 
 Bloc BlocRotations::operator[](int index)
 {
-	switch (index)
+	switch (index%3)
 	{
 	case 0:
 		return A;
@@ -62,5 +62,7 @@ Bloc BlocRotations::operator[](int index)
 		return B;
 	case 2:
 		return C;
+	default:
+		return A;
 	}
 }
