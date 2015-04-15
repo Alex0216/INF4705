@@ -17,7 +17,7 @@ bool reverseSurfaceComparison(Bloc l, Bloc b);
 bool setCompare(vector<Bloc> a, vector<Bloc> b);
 
 /**
- * Place les blocs dans la premières tour possible
+ * Place les blocs dans la premiï¿½res tour possible
  */
 vector<vector<Bloc>> vorace::firstFit(std::vector<Bloc>& blocs)
 {
@@ -146,7 +146,7 @@ std::vector<std::vector<Bloc>> vorace::insertBestFit(std::vector<Bloc>& blocs)
 			tours[tours.size() - 1].push_back(b);
 		}
 
-		std::sort(begin(tours), end(tours), [](auto a, auto b)-> bool {return a.size() > b.size(); });
+		std::sort(begin(tours), end(tours), [](vector<Bloc> a, vector<Bloc> b)-> bool {return a.size() > b.size(); });
 	}
 	return tours;
 }

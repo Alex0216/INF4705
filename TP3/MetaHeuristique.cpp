@@ -13,7 +13,6 @@
 #include "bloc.h"
 #include "blocrotation.h"
 #include "vorace.h"
-#include "dynamique.h"
 
 using namespace std;
 
@@ -29,7 +28,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 
 	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
-	std::sort(begin(tours), end(tours), [](auto a, auto b)->bool {return a.size() > b.size(); });
+	std::sort(begin(tours), end(tours), [](vector<Bloc> a, vector<Bloc> b)->bool {return a.size() > b.size(); });
 
 	vector<vector<Bloc>> meilleur(tours);
 	vector<vector<Bloc>> solutionCourante(tours);
@@ -95,7 +94,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 			meilleur = toursVorace;
 
 		//Prendre la tour avec le plus grand nombre de bloc et l'ajouter à la solution
-		auto maxTourIt = std::max_element(begin(meilleur), end(meilleur), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
+		auto maxTourIt = std::max_element(begin(meilleur), end(meilleur), [](vector<Bloc>& a, vector<Bloc>& b) -> bool {return a.size() < b.size(); });
 		maxTour = *maxTourIt;
 		meilleur.erase(maxTourIt);
 		solution.push_back(maxTour);

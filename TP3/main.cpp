@@ -7,8 +7,6 @@
 
 #include "bloc.h"
 #include "vorace.h"
-#include "dynamique.h"
-#include "graph.h"
 #include "MetaHeuristique.h"
 
 #include <chrono>
