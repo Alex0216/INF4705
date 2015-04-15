@@ -94,7 +94,7 @@ vector<vector<Bloc>> vorace::insertFirstFit(std::vector<Bloc>& blocs)
         if(stacked == false)
         {
             tours.emplace_back();
-            tours[tours.size()-1].push_back(b);
+            tours[tours.size()-1].push_back(BlocRotations(b).getHighestSurface());
         }
     }
     return tours;

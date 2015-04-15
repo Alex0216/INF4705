@@ -5,9 +5,8 @@
 
 namespace MetaHeuristique
 {
-	void recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs);
-	std::vector<std::vector<Bloc>> recuitSimuleRecursif(std::vector<Bloc>& Bloc, int depth);
-	std::vector<std::vector<Bloc>> recuitSimuleIteratif(std::vector<Bloc>& Bloc);
+	void recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs, double t, double c);
+	std::vector<std::vector<Bloc>> recuitSimuleIteratif(std::vector<Bloc>& Bloc, double t, double c);
 
 
 	std::vector<std::vector<Bloc>> voisin(std::vector<std::vector<Bloc>>& tours);

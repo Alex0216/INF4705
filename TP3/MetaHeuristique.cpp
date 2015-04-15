@@ -17,12 +17,12 @@
 
 using namespace std;
 
-void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs)
+void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs, double t, double c)
 {
-	int Kmax = 500;
-	double temp = 3;
+	int Kmax = 100;
+	double temp = 1;
 	int palier = 50;
-	double coeff = 0.9;
+	double coeff = 1.5;
 
 	//ofstream data;
 	//data.open("../moyenne50k.csv");
@@ -33,7 +33,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 
 	vector<vector<Bloc>> meilleur(tours);
 	vector<vector<Bloc>> solutionCourante(tours);
-	cout << "start: " << tours.size() << endl;
+	//cout << "start: " << tours.size() << endl;
 	for (int i = 0; i < Kmax-1; ++i)
 	{
 		for (int j = 1; j < palier; ++j)
@@ -54,7 +54,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 				solutionCourante = nouveau;
 				if (meilleur.size() > solutionCourante.size())
 				{
-					cout << "Nouveau meilleur: " << nouveau.size() << endl;
+					//cout << "Nouveau meilleur: " << nouveau.size() << endl;
 					meilleur = solutionCourante;
 				}
 			}
@@ -62,7 +62,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 		temp *= coeff;
 
 		//verifie si la solution converge
-		if (convergence / ((i + 1)*palier) < 0.15)
+		if (false && convergence / ((i + 1)*palier) < 0.15)
 		{
 			cout << "Converge apres " << (i+1)*palier << " iterations" << endl;
 			break;
@@ -71,48 +71,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 	tours = meilleur;
 }
 
-std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleRecursif(std::vector<Bloc>& bloc, int depth)
-{
-	//Generer solution initial
-	auto init = vorace::insertFirstFit(bloc);
-
-	//Faire un recuit simule
-	recuitSimule(init, (int)bloc.size());
-
-	if (depth < 0)
-		return init;
-
-	//Prendre la tour avec le plus grand nombre de bloc et l'enlever de la solution
-	auto maxTourIt = std::max_element(begin(init), end(init), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
-	auto maxTour = *maxTourIt;
-	init.erase(maxTourIt);
-
-	//enlever les blocs de la grande tour de l'ensemble des blocs de depart
-	for (auto& b : maxTour)
-	{
-		for (int i = bloc.size() - 1; i >= 0; --i)
-		{
-			if (b == bloc[i])
-			{
-				bloc.erase(begin(bloc) + i);
-				break;
-			}
-		}
-	}
-
-	vector<vector<Bloc>> solution;
-	solution.push_back(maxTour);
-	auto solutionRecursif = recuitSimuleRecursif(bloc, --depth);
-	if(solutionRecursif.size() < init.size())
-		for (auto& tour : solutionRecursif)
-			solution.push_back(tour);
-	else
-		for (auto& tour : init)
-			solution.push_back(tour);
-	return solution;
-}
-
-std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector<Bloc>& bloc)
+std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector<Bloc>& bloc, double t, double c)
 {
 	vector<Bloc> ensemble;
 	std::transform(begin(bloc), end(bloc), back_inserter(ensemble), [](Bloc a) -> Bloc {return BlocRotations(a).CritereAlex(); });
@@ -123,64 +82,36 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 
 	auto start_time = chrono::system_clock::now();
 
-	while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000)
+	while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000 && ensemble.size() > 0)
 	{
 
 		vector<Bloc> maxTour;
-		if (ensemble.size() < 10000)
+		//Générer une solution
+		auto toursVorace = vorace::insertFirstFit(ensemble);
+		//Faire un recuit simule
+		recuitSimule(toursVorace, (int)ensemble.size(), t, c);
+
+		if (toursVorace.size() < meilleur.size() || meilleur.empty())
+			meilleur = toursVorace;
+
+		//Prendre la tour avec le plus grand nombre de bloc et l'ajouter à la solution
+		auto maxTourIt = std::max_element(begin(meilleur), end(meilleur), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
+		maxTour = *maxTourIt;
+		meilleur.erase(maxTourIt);
+		solution.push_back(maxTour);
+
+		//enlever les blocs de la grande tour de l'ensemble des blocs de depart
+		for (auto& b : maxTour)
 		{
-			maxTour = dynamique::plusGrandTour(ensemble);
-			//enlever les blocs de la grande tour de l'ensemble des blocs de depart
-			for (auto& b : maxTour)
+			for (int i = ensemble.size() - 1; i >= 0; --i)
 			{
-				for (int i = ensemble.size() - 1; i >= 0; --i)
+				if (b == ensemble[i])
 				{
-					if (b == ensemble[i])
-					{
-						ensemble.erase(begin(ensemble) + i);
-						break;
-					}
-				}
-			}
-			solution.push_back(maxTour);
-			meilleur.clear();
-		}
-
-		else
-		{
-			//Générer une solution
-			auto toursVorace = vorace::insertFirstFit(ensemble);
-			//Faire un recuit simule
-			recuitSimule(toursVorace, (int)ensemble.size());
-
-			if (toursVorace.size() < meilleur.size() || meilleur.empty())
-				meilleur = toursVorace;
-
-			//Prendre la tour avec le plus grand nombre de bloc et l'ajouter à la solution
-			auto maxTourIt = std::max_element(begin(meilleur), end(meilleur), [](auto& a, auto&b) -> bool {return a.size() < b.size(); });
-			maxTour = *maxTourIt;
-			meilleur.erase(maxTourIt);
-			solution.push_back(maxTour);
-
-			//enlever les blocs de la grande tour de l'ensemble des blocs de depart
-			for (auto& b : maxTour)
-			{
-				for (int i = ensemble.size() - 1; i >= 0; --i)
-				{
-					if (b == ensemble[i])
-					{
-						ensemble.erase(begin(ensemble) + i);
-						break;
-					}
+					ensemble.erase(begin(ensemble) + i);
+					break;
 				}
 			}
 		}
-
-	}
-	if (meilleur.empty())
-	{
-		meilleur = vorace::insertFirstFit(bloc);
-		recuitSimule(meilleur, (int)bloc.size());
 	}
 
 	for (auto& tour : meilleur)
@@ -367,7 +298,7 @@ void MetaHeuristique::insertBloc(std::vector<Bloc>& blocs, std::vector<std::vect
 		if (stacked == false)
 		{
 			tours.emplace_back();
-			tours[tours.size() - 1].push_back(b);
+			tours[tours.size() - 1].push_back(rot.getHighestSurface());
 		}
 	}
 }

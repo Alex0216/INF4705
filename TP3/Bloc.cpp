@@ -40,7 +40,7 @@ void Bloc::extendDataSet(std::vector<Bloc> blocs)
 
 std::ostream& operator<<(std::ostream& os, const Bloc& bloc)
 {
-    os << bloc.largeur_ << ", " << bloc.profondeur_ << ", " << bloc.hauteur_;
+    os << bloc.largeur_ << " " << bloc.profondeur_ << " " << bloc.hauteur_;
     return os;
 }
 

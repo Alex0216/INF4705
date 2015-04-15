@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <fstream>
 
 #include "bloc.h"
 #include "vorace.h"
@@ -31,17 +32,31 @@ int main(int argc, char* argv[]) {
 void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<Bloc>& blocs, int size, bool print)
 {
 	std::vector<Bloc> blocsDepart(blocs);
-
+	ofstream data;
+	data.open("param.csv");
 	auto start_time = chrono::system_clock::now();
+	for (double t = 0.01; t < 100; t += 0.01)
+	{
+		for (double c = 0.01; c < 10; c += 0.01)
+		{
+			vector<vector<Bloc>> solution;
+			auto tours = MetaHeuristique::recuitSimuleIteratif(blocs, t, c);
+			//auto tours = dynamique::plusGrandTour(blocs);
+			auto end_time = chrono::system_clock::now();
+			data << t << ";" << c << ";" << tours.size() << endl;
+			cout << t << ";" << c << ";" << tours.size() << endl;
+		}
+	}
+
 	vector<vector<Bloc>> solution;
-	auto tours = MetaHeuristique::recuitSimuleIteratif(blocs);
+	auto tours = MetaHeuristique::recuitSimuleIteratif(blocs, 0, 0);
 	//auto tours = dynamique::plusGrandTour(blocs);
 	auto end_time = chrono::system_clock::now();
 
 	cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
 	cout << "NB tours: " << tours.size() << endl;
 
-	//cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
+	cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
 
 
 	if (print)
@@ -49,9 +64,10 @@ void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<
 
 		for (auto& tour : tours)
 		{
+			cout << tour.size() << endl;
 			for (auto& b : tour)
 				cout << b << endl;
-			cout << "========" << endl;
+			
 		}
 
 	}
