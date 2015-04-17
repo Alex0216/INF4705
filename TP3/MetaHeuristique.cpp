@@ -66,8 +66,8 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 
 	auto start_time = chrono::system_clock::now();
 	int iteration = 0;
-	//while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000 && ensemble.size() > 0)
-	while(iteration++ < 10)
+	//Nous iterons durant 10 iterations, ou pendant 60 secondes maximum
+	while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 50000 && iteration++ < 10 && !ensemble.empty())
 	{
 
 		vector<Bloc> maxTour;
@@ -218,11 +218,12 @@ bool MetaHeuristique::critereMetropolis(double delta, double temperature)
 
 void MetaHeuristique::shuffleBloc(std::vector<Bloc>& blocs)
 {
+
 	random_device rd;
 	default_random_engine eng(rd());
 	uniform_int_distribution<int> uniform(-5, 5);
 
-	for (int i = 5; i < blocs.size()-5; i += 1)
+	for (int i = 5; i < ((int)blocs.size())-5; i += 1)
 	{
 		int index = uniform(eng);
 		std::swap(blocs[i], blocs[i + index]);

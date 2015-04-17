@@ -36,10 +36,8 @@ void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<
 	//auto tours = dynamique::plusGrandTour(blocs);
 	auto end_time = chrono::system_clock::now();
 
-	//cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
+	cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
 	cout <<  tours.size() << endl;
-
-
 
 	if (print)
 	{
