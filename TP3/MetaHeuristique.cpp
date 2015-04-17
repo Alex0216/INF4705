@@ -18,13 +18,11 @@ using namespace std;
 
 void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nbBlocs, double t, double c)
 {
-	int Kmax = 100;
-	double temp = 1;
+	int Kmax = 70;
+	double temp = t;
 	int palier = 50;
-	double coeff = 1.5;
+	double coeff = c;
 
-	//ofstream data;
-	//data.open("../moyenne50k.csv");
 
 	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
@@ -32,7 +30,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 
 	vector<vector<Bloc>> meilleur(tours);
 	vector<vector<Bloc>> solutionCourante(tours);
-	//cout << "start: " << tours.size() << endl;
+	cout << "start: " << tours.size() << endl;
 	for (int i = 0; i < Kmax-1; ++i)
 	{
 		for (int j = 1; j < palier; ++j)
@@ -53,7 +51,7 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 				solutionCourante = nouveau;
 				if (meilleur.size() > solutionCourante.size())
 				{
-					//cout << "Nouveau meilleur: " << nouveau.size() << endl;
+					cout << "Nouveau meilleur: " << nouveau.size() << endl;
 					meilleur = solutionCourante;
 				}
 			}
@@ -74,14 +72,14 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 {
 	vector<Bloc> ensemble;
 	std::transform(begin(bloc), end(bloc), back_inserter(ensemble), [](Bloc a) -> Bloc {return BlocRotations(a).CritereAlex(); });
-	std::sort(begin(ensemble), end(ensemble), [](Bloc& a, Bloc& b) -> bool {return a.getSurface() > b.getSurface(); });
-	vector<vector<Bloc>> init = vorace::insertFirstFit(bloc);
+	std::sort(begin(ensemble), end(ensemble), [](const Bloc& a, const Bloc& b) -> bool {return a.getSurface() > b.getSurface(); });
 	vector<vector<Bloc>> meilleur;
 	vector<vector<Bloc>> solution;
 
 	auto start_time = chrono::system_clock::now();
-
-	while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000 && ensemble.size() > 0)
+	int iteration = 0;
+	//while(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start_time).count() < 60000 && ensemble.size() > 0)
+	while(iteration++ < 10)
 	{
 
 		vector<Bloc> maxTour;
@@ -90,7 +88,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 		//Faire un recuit simule
 		recuitSimule(toursVorace, (int)ensemble.size(), t, c);
 
-		if (toursVorace.size() < meilleur.size() || meilleur.empty())
+		if (toursVorace.size() <= meilleur.size() || meilleur.empty())
 			meilleur = toursVorace;
 
 		//Prendre la tour avec le plus grand nombre de bloc et l'ajouter à la solution
@@ -102,7 +100,7 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 		//enlever les blocs de la grande tour de l'ensemble des blocs de depart
 		for (auto& b : maxTour)
 		{
-			for (int i = ensemble.size() - 1; i >= 0; --i)
+			for (int i = 0; i < ensemble.size(); ++i)
 			{
 				if (b == ensemble[i])
 				{
@@ -111,6 +109,8 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 				}
 			}
 		}
+		//Melanger les blocs legerement pour la prochaine iteration
+		shuffleBloc(ensemble);
 	}
 
 	for (auto& tour : meilleur)
@@ -353,6 +353,19 @@ double MetaHeuristique::calculeMoyenneHauteur(std::vector<std::vector<Bloc>> tou
 	});
 
 	return sum / (double)tours.size();
+}
+
+void MetaHeuristique::shuffleBloc(std::vector<Bloc>& blocs)
+{
+	random_device rd;
+	default_random_engine eng(rd());
+	uniform_int_distribution<int> uniform(-5, 5);
+
+	for (int i = 5; i < blocs.size()-5; i += 1)
+	{
+		int index = uniform(eng);
+		std::swap(blocs[i], blocs[i + index]);
+	}
 }
 
 

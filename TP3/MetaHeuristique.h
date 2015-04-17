@@ -19,6 +19,7 @@ namespace MetaHeuristique
 	bool critereMetropolis(double delta, double temperature);
 	void balanceTower(std::vector<std::vector<Bloc>>& tours);
 	double calculeMoyenneHauteur(std::vector<std::vector<Bloc>> tours);
+	void shuffleBloc(std::vector<Bloc>& blocs);
 
 	bool test(std::vector<std::vector<Bloc>> tours, int n);
 };

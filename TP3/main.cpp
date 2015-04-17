@@ -30,24 +30,10 @@ int main(int argc, char* argv[]) {
 void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<Bloc>& blocs, int size, bool print)
 {
 	std::vector<Bloc> blocsDepart(blocs);
-	ofstream data;
-	data.open("param.csv");
-	auto start_time = chrono::system_clock::now();
-	for (double t = 0.01; t < 100; t += 0.01)
-	{
-		for (double c = 0.01; c < 10; c += 0.01)
-		{
-			vector<vector<Bloc>> solution;
-			auto tours = MetaHeuristique::recuitSimuleIteratif(blocs, t, c);
-			//auto tours = dynamique::plusGrandTour(blocs);
-			auto end_time = chrono::system_clock::now();
-			data << t << ";" << c << ";" << tours.size() << endl;
-			cout << t << ";" << c << ";" << tours.size() << endl;
-		}
-	}
 
+	auto start_time = chrono::system_clock::now();
 	vector<vector<Bloc>> solution;
-	auto tours = MetaHeuristique::recuitSimuleIteratif(blocs, 0, 0);
+	auto tours = MetaHeuristique::recuitSimuleIteratif(blocs, 3, 0.95);
 	//auto tours = dynamique::plusGrandTour(blocs);
 	auto end_time = chrono::system_clock::now();
 
