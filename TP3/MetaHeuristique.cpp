@@ -24,7 +24,6 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 	double coeff = c;
 
 
-	double convergence = 0.0;
 	//trier les tours en ordre de nb de bloc decroissant
 	std::sort(begin(tours), end(tours), [](vector<Bloc> a, vector<Bloc> b)->bool {return a.size() > b.size(); });
 
@@ -41,11 +40,8 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 			else
 				nouveau = voisinTourHasard(solutionCourante);
 
-			//double delta = calculeMoyenneHauteur(solutionCourante) - calculeMoyenneHauteur(nouveau);
-			double nouvelMoyenne = calculeMoyenneHauteur(nouveau);
-			double moyenne = calculeMoyenneHauteur(solutionCourante);
+
 			double delta = (int)solutionCourante.size() - (int)nouveau.size();
-			convergence += nouvelMoyenne - moyenne;
 			if (critereMetropolis(delta, temp))
 			{
 				solutionCourante = nouveau;
@@ -58,12 +54,6 @@ void MetaHeuristique::recuitSimule(std::vector<std::vector<Bloc>>& tours, int nb
 		}
 		temp *= coeff;
 
-		//verifie si la solution converge
-		if (false && convergence / ((i + 1)*palier) < 0.15)
-		{
-			cout << "Converge apres " << (i+1)*palier << " iterations" << endl;
-			break;
-		}
 	}
 	tours = meilleur;
 }
@@ -119,49 +109,6 @@ std::vector<std::vector<Bloc>> MetaHeuristique::recuitSimuleIteratif(std::vector
 	return solution;
 }
 
-std::vector<std::vector<Bloc>> MetaHeuristique::voisin(std::vector<std::vector<Bloc>>& tours)
-{
-	vector<vector<Bloc>> toursVoisin(tours);
-
-	//Prendre une tour au hasard
-	random_device rd;
-	default_random_engine eng(rd());
-	uniform_int_distribution<int> uniform(0, (int)toursVoisin.size() - 1);
-	int indexTour = uniform(eng);
-
-	//Prendre un bloc au harsard
-	uniform = uniform_int_distribution<int>(0, (int)toursVoisin[indexTour].size() - 1);
-	int indexBloc = uniform(eng);
-
-	//enlever le bloc
-	auto bloc = toursVoisin[indexTour][indexBloc];
-	toursVoisin[indexTour].erase(toursVoisin[indexTour].begin() + indexBloc);
-	
-
-	//si la tour est vide, l'enlever aussi
-	if (toursVoisin[indexTour].empty())
-		toursVoisin.erase(begin(toursVoisin) + indexTour);
-
-	//inserer le bloc dans un tours choisie au hasard
-	uniform = uniform_int_distribution<int>(0, (int)toursVoisin.size() - 1);
-	int tourCible = uniform(eng);
-	vector<Bloc>& tour = toursVoisin[tourCible];
-	int index = 0;
-	while (index < tour.size() && tour[index].canStack(bloc))
-		index++;
-	tour.insert(begin(tour) + index, bloc);
-	int insertIndex = ++index;
-	while (index < tour.size() && !bloc.canStack(tour[index]))
-		index++;
-
-	vector<Bloc> blocsRemoved;
-	std::copy(begin(tour) + insertIndex, begin(tour) + index, back_inserter(blocsRemoved));
-	tour.erase(begin(tour) + insertIndex, begin(tour) + index);
-
-	insertBloc(blocsRemoved, toursVoisin);
-
-	return toursVoisin;
-}
 
 std::vector<std::vector<Bloc>> MetaHeuristique::voisinPlusPetiteTour(std::vector<std::vector<Bloc>>& tours)
 {
@@ -196,55 +143,6 @@ std::vector<std::vector<Bloc>> MetaHeuristique::voisinTourHasard(std::vector<std
 
 
 	insertBloc(minTour, toursVoisin);
-
-	return toursVoisin;
-}
-
-std::vector<std::vector<Bloc>> MetaHeuristique::voisinRotation(std::vector<std::vector<Bloc>>& tours)
-{
-	vector<vector<Bloc>> toursVoisin(tours);
-	balanceTower(toursVoisin);
-	//Prendre une tour au hasard
-	random_device rd;
-	default_random_engine eng(rd());
-	uniform_int_distribution<int> uniform(0, (int)toursVoisin.size() - 1);
-	int indexTour = uniform(eng);
-
-	//Prendre un bloc au harsard
-	uniform = uniform_int_distribution<int>(0, (int)toursVoisin[indexTour].size() - 1);
-	int indexBloc = uniform(eng);
-
-	//enlever le bloc
-	auto bloc = toursVoisin[indexTour][indexBloc];
-	toursVoisin[indexTour].erase(toursVoisin[indexTour].begin() + indexBloc);
-
-
-	//si la tour est vide, l'enlever aussi
-	if (toursVoisin[indexTour].empty())
-		toursVoisin.erase(begin(toursVoisin) + indexTour);
-
-	//Rotate le bloc
-	uniform = uniform_int_distribution<int>(0, 2);
-	int rotation = uniform(eng);
-	bloc = BlocRotations(bloc)[rotation];
-
-	//inserer le bloc dans un tours choisie au hasard
-	uniform = uniform_int_distribution<int>(0, (int)toursVoisin.size() - 1);
-	int tourCible = uniform(eng);
-	vector<Bloc>& tour = toursVoisin[tourCible];
-	int index = 0;
-	while (index < tour.size() && tour[index].canStack(bloc))
-		index++;
-	tour.insert(begin(tour) + index, bloc);
-	int insertIndex = ++index;
-	while (index < tour.size() && !bloc.canStack(tour[index]))
-		index++;
-
-	vector<Bloc> blocsRemoved;
-	std::copy(begin(tour) + insertIndex, begin(tour) + index, back_inserter(blocsRemoved));
-	tour.erase(begin(tour) + insertIndex, begin(tour) + index);
-
-	insertBloc(blocsRemoved, toursVoisin);
 
 	return toursVoisin;
 }
@@ -319,41 +217,6 @@ bool MetaHeuristique::critereMetropolis(double delta, double temperature)
 		return false;
 }
 
-void MetaHeuristique::balanceTower(std::vector<std::vector<Bloc>>& tours)
-{
-	for (auto& tour : tours)
-	{
-		if (tour.empty())
-			break;
-		///rotate base
-		BlocRotations rot(tour[0]);
-
-
-		for (int i = 1; i < tour.size()-1; ++i)
-		{
-			BlocRotations bloc(tour[i]);
-
-			if (bloc.B.canStack(tour[i + 1]) && tour[i - 1].canStack(bloc.B))
-			{
-				tour[i] = bloc.B;
-			}
-			else if (bloc.C.canStack(tour[i + 1]) && tour[i - 1].canStack(bloc.C))
-			{
-				tour[i] = bloc.C;
-			}
-		}
-	}
-}
-
-double MetaHeuristique::calculeMoyenneHauteur(std::vector<std::vector<Bloc>> tours)
-{
-	int sum = std::accumulate(begin(tours), end(tours), 0, [](int total, const vector<Bloc>& tour)
-	{
-		return total + std::accumulate(begin(tour), end(tour), 0, [](int hauteur, const Bloc& bloc){return hauteur + bloc.getHauteur(); });
-	});
-
-	return sum / (double)tours.size();
-}
 
 void MetaHeuristique::shuffleBloc(std::vector<Bloc>& blocs)
 {
@@ -368,16 +231,3 @@ void MetaHeuristique::shuffleBloc(std::vector<Bloc>& blocs)
 	}
 }
 
-
-bool MetaHeuristique::test(std::vector<std::vector<Bloc>> tours, int n)
-{
-	size_t nbBloc = 0;
-	for (auto& tour : tours)
-	{
-		nbBloc += tour.size();
-		for (int i = 0; i < tour.size() - 1; ++i)
-			if (!tour[i].canStack(tour[i + 1]))
-				return false;
-	}
-	return nbBloc == n;
-}
