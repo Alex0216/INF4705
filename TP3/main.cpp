@@ -3,7 +3,6 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
-#include <fstream>
 
 #include "bloc.h"
 #include "vorace.h"
@@ -21,8 +20,8 @@ int main(int argc, char* argv[]) {
 
     auto blocs = getDataSet(argv[2]);
     int size = (int)blocs.size();
-
-	boxStacking(&vorace::insertFirstFit, blocs, size, (argc >= 4 && argv[4] == "-p"));
+	std::string print = "-p";
+	boxStacking(&vorace::insertFirstFit, blocs, size, (argc >= 4 && print.compare(argv[3]) == 0));
    
     return 0;
 }
@@ -37,15 +36,13 @@ void boxStacking(std::vector<std::vector<Bloc>>(*vorace)(vector<Bloc>&), vector<
 	//auto tours = dynamique::plusGrandTour(blocs);
 	auto end_time = chrono::system_clock::now();
 
-	cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
-	cout << "NB tours: " << tours.size() << endl;
+	//cout << "Temps: " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() << endl;
+	cout <<  tours.size() << endl;
 
-	cout << "Test: " << boolalpha << test(tours, blocsDepart) << endl;
 
 
 	if (print)
 	{
-
 		for (auto& tour : tours)
 		{
 			cout << tour.size() << endl;
